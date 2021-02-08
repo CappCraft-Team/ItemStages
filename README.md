@@ -25,38 +25,48 @@ When something is restricted by this mod, several things will happen to prevent 
 ```
 // Example Script
 
-// Restricts access to stone.
-mods.ItemStages.addItemStage("one", <minecraft:stone>);
+import crafttweaker.item.IIngredient;
 
-// Restricts access to iron chestplate..
-// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
-mods.ItemStages.addItemStage("one", <minecraft:iron_chestplate>);
+import team.cappcraft.itemstages.ItemStagesCrT;
+import team.cappcraft.itemstages.condition.AnyConditionGroup;
+import team.cappcraft.itemstages.condition.AllConditionGroup;
 
-// Restricts access to all level 5 enchantments.
-// Note: With JEI auto hiding, you will need to manually add another entry for the version of the item in JEI.
-mods.ItemStages.addItemStage("one", <minecraft:enchanted_book>.withTag({StoredEnchantments: [{lvl: 5 as short}]}));
+//Stage
+val stageGroup = ItemStagesCrT.anyStage("Stage_Dirt", "Stage_Wood");
+val stageNoOak = ItemStagesCrT.anyStage("No Oak");
 
-// Restricts access to Potion of Harming II
-mods.ItemStages.addItemStage("one", <minecraft:potion>.withTag({Potion: "minecraft:strong_harming"}));
+//ItemStack Matcher - Dirt & Wood & chestplate & shield
+val itemGroup = AnyConditionGroup([
+    ItemStagesCrT.anyIngredient(<minecraft:dirt>, <minecraft:iron_chestplate>, <minecraft:shield>),
+    ItemStagesCrT.anyIngredient(<ore:logWood>)
+    ]);
+//ItemStack Matcher - All the item in the above group except Oak
+val Any_Except_Oak = AllConditionGroup([
+    itemGroup,
+    ItemStagesCrT.anyIngredient(false, <minecraft:log:0>)
+    ]);
 
-// Restricts access to all dyes in the ore dictionary.
-mods.ItemStages.addItemStage("one", <ore:dye>);
+//Restrict item
+ItemStagesCrT.addIngredientRestriction(itemGroup, stageGroup);
+ItemStagesCrT.addIngredientRestriction(Any_Except_Oak, stageNoOak);
 
-// Gives an item a different name if it is restricted
-mods.ItemStages.setUnfamiliarName("Clump of Fur", <minecraft:wool:*>);
+//Change unfamiliar name
+ItemStagesCrT.addCustomItemName(itemGroup, "CustomStageName");
 
-// Stages a liquid from JEI
-mods.ItemStages.stageLiquid("one", <liquid:water>);
+//Recipe Category
+ItemStagesCrT.addRecipeCategoryRestriction(
+    ItemStagesCrT.anyRecipeCategory("minecraft.fuel"),
+    stageGroup);
 
-// Stages a tooltip line. All lines that start with target text.
-mods.ItemStages.stageTooltip("one", "When");
+//Enchantment
+val enchantGroup = ItemStagesCrT.anyEnchantment(<enchantment:minecraft:protection>);
+ItemStagesCrT.addEnchantmentRestriction(enchantGroup, stageGroup);
 
-// Stages a recipe category in JEI.
-mods.ItemStages.stageRecipeCategory("eight", "minecraft.anvil");
+//Liquid
+val liquidGroup = ItemStagesCrT.anyIngredient(<fluid:lava>);
+ItemStagesCrT.addIngredientRestriction(liquidGroup, stageGroup);
 
-// Stages an enchantment (removes the enchanted book from JEI and stops the enchantment being used)
-mods.ItemStages.stageEnchant("one", <enchantment:minecraft:protection>);
-
-// Stages an enchantment by level (removes the enchanted book from JEI and stops the enchantment being used)
-mods.ItemStages.stageEnchantByLevel("one", <enchantment:minecraft:projectile_protection>.makeEnchantment(1));
+//Tooltip - Remove one of armor's  tooltip
+val tooltipGroup = ItemStagesCrT.anyToolTip("穿在身上时");
+ItemStagesCrT.addToolTipRestriction(tooltipGroup, stageGroup);
 ```

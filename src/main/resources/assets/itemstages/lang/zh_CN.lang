@@ -1,0 +1,7 @@
+#Chinese ItemStages Translation
+tooltip.itemstages.name.default=不熟悉的物品
+tooltip.itemstages.description=§b§o你还不知道如何使用它
+tooltip.itemstages.enchant=§r在完全理解 [§l§6%s§r] 上的附魔前，你无法使用它
+tooltip.itemstages.stage=§l阶段:
+message.itemstages.drop=§l你掉落了 [%s§r§l]
+message.itemstages.attack=§l在完全理解 [%s§r§l] 之前你无法用它造成任何伤害
